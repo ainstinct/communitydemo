@@ -16,23 +16,15 @@ public class PaginationDTO {
     private List<Integer> pages = new ArrayList<>();
     private Integer totalPage;
 
-    public void setPagination(Integer totalCount, Integer page, Integer size) {
-
-
-        if(totalCount % size == 0){
-            totalPage = totalCount / size;//计算有多少页数，如果整除说明满页
-        }else{
-            totalPage = totalCount / size +1;//如果不能整除说明必须要多一页，其实这边可以用向上取整来做
-        }
-
+    public void setPagination(Integer totalPage, Integer page) {
+        this.totalPage = totalPage;
         this.page = page;
-
         pages.add(page);
         for(int i=1 ;i<=3;i++){
             if(page - i> 0){
                 pages.add(0,page-i);//往头部插入
             }
-            if(page +i <= totalCount){
+            if(page +i <= totalPage){
                 pages.add(page+i);//往尾部插入
             }
 

@@ -1,8 +1,6 @@
 package com.community.hj.community.controller;
 
 import com.community.hj.community.mapper.QuestionMapper;
-import com.community.hj.community.mapper.QuestionMapper;
-import com.community.hj.community.mapper.UserMapper;
 import com.community.hj.community.model.Question;
 import com.community.hj.community.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +9,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 @Controller
@@ -21,8 +17,6 @@ public class PublishController {
     @Autowired
     private QuestionMapper questionMapper;
 
-    @Autowired
-    private UserMapper userMapper;
 
     @GetMapping("/publish")//form表单提交
     public String publish(){
@@ -53,21 +47,22 @@ public class PublishController {
             return "publish";
         }
 
-        //验证是否登录
-        User user = null;
-        Cookie[] cookies = request.getCookies();
-        if(cookies != null && cookies.length != 0){
-            for(Cookie cookie : cookies){
-                if(cookie.getName().equals("token")){
-                    String token = cookie.getValue();
-                     user = userMapper.findByToken(token);//通过token拿到数据库里存的user信息
-                    if(user != null){//user信息存在就绑定到session上去
-                        request.getSession().setAttribute("user",user);
-                    }
-                    break;
-                }
-            }
-        }
+//        //验证是否登录
+//        User user = null;
+//        Cookie[] cookies = request.getCookies();
+//        if(cookies != null && cookies.length != 0){
+//            for(Cookie cookie : cookies){
+//                if(cookie.getName().equals("token")){
+//                    String token = cookie.getValue();
+//                     user = userMapper.findByToken(token);//通过token拿到数据库里存的user信息
+//                    if(user != null){//user信息存在就绑定到session上去
+//                        request.getSession().setAttribute("user",user);
+//                    }
+//                    break;
+//                }
+//            }
+//        }
+        User user = (User)request.getSession().getAttribute("user");
         if(user == null){//user不存在，将信息(用户未登录)返回到前端页面上去
             model.addAttribute("error","用户未登录");
             return "publish";
