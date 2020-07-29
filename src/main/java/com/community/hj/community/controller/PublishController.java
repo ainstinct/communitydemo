@@ -1,21 +1,33 @@
 package com.community.hj.community.controller;
 
+import com.community.hj.community.dto.QuestionDTO;
 import com.community.hj.community.mapper.QuestionMapper;
 import com.community.hj.community.model.Question;
 import com.community.hj.community.model.User;
+import com.community.hj.community.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import javax.servlet.http.HttpServletRequest;
 
 @Controller
 public class PublishController {
-
     @Autowired
-    private QuestionMapper questionMapper;
+    private QuestionService questionService;
+
+    @GetMapping("/publish/{id}")//当我们点击页面的时候，传过来一个id，然后我们通过这个id去question中去获取当前的Question，把它写到页面上去
+    public String edit(@PathVariable(name="id") Integer id, Model model){
+        QuestionDTO question = questionService.getById(id);
+        model.addAttribute("title",question.getTitle());//是为了会写到页面上去
+        model.addAttribute("description",question.getDescription());
+        model.addAttribute("tag",question.getTag());
+        model.addAttribute("id",question.getId());
+        return "publish";
+    }
 
 
     @GetMapping("/publish")//form表单提交
@@ -28,6 +40,7 @@ public class PublishController {
     @RequestParam("title") String title,
     @RequestParam("description") String description,
     @RequestParam("tag") String tag,
+    @RequestParam(value = "id",required = false) Integer id,
     HttpServletRequest request,
     Model model
     ){
@@ -74,9 +87,9 @@ public class PublishController {
         question.setDescription(description);
         question.setTag(tag);
         question.setCreator(user.getId());
-        question.setGmtCreate(System.currentTimeMillis());
-        question.setGmtModified(question.getGmtCreate());
-        questionMapper.create(question);
+
+        question.setId(id);
+        questionService.createOrUpdate(question);
         return "redirect:/";
     }
 }

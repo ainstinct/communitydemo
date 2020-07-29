@@ -48,7 +48,7 @@ public class QuestionService {
 
 
         for(Question question : questions){
-            User user = userMapper.findById(question.getCreator());//获取当前的user
+            User user = userMapper.selectByPrimaryKey(question.getCreator());//获取当前的user
             QuestionDTO questionDTO = new QuestionDTO();
             BeanUtils.copyProperties(question,questionDTO);//快速的把question对象的所有属性拷贝到questionDTO
             questionDTO.setUser(user);
@@ -82,7 +82,7 @@ public class QuestionService {
         List<QuestionDTO> questionDTOList = new ArrayList<>();
 
         for(Question question : questions){
-            User user = userMapper.findById(question.getCreator());//获取当前的user
+            User user = userMapper.selectByPrimaryKey(question.getCreator());//获取当前的user
             QuestionDTO questionDTO = new QuestionDTO();
             BeanUtils.copyProperties(question,questionDTO);//快速的把question对象的所有属性拷贝到questionDTO
             questionDTO.setUser(user);
@@ -96,7 +96,22 @@ public class QuestionService {
         Question question = questionMapper.getById(id);
         QuestionDTO questionDTO = new QuestionDTO();
         BeanUtils.copyProperties(question,questionDTO);//将question赋值到questionDTO
+        User user = userMapper.selectByPrimaryKey(question.getCreator());
+        questionDTO.setUser(user);
         return questionDTO;
+    }
+
+    public void createOrUpdate(Question question) {
+        if(question.getId() == null){
+            //创建
+            question.setGmtCreate(System.currentTimeMillis());
+            question.setGmtModified(question.getGmtCreate());
+            questionMapper.create(question);
+        }else{
+            //更新
+            question.setGmtModified(question.getGmtCreate());
+            questionMapper.update(question);
+        }
     }
 }
 
