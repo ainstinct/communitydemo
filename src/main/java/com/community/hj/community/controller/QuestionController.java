@@ -18,6 +18,7 @@ public class QuestionController {
     public String question(@PathVariable(name = "id") Integer id, Model model){
     //接下就是，拿到Id之后去数据库中查询这个Id是否存在，存在的 话把里面的数据拿出来，然后跳转到页面,数据是通过model传入到页面的
         QuestionDTO questionDTO = questionService.getById(id);
+        questionService.incView(id);//累加阅读数
         model.addAttribute("question",questionDTO);//将questionDTO传到页面
         return "question";
     }

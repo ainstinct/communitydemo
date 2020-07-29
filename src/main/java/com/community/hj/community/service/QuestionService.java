@@ -2,6 +2,7 @@ package com.community.hj.community.service;
 
 import com.community.hj.community.dto.PaginationDTO;
 import com.community.hj.community.dto.QuestionDTO;
+import com.community.hj.community.exception.CustomizeException;
 import com.community.hj.community.mapper.QuestionMapper;
 import com.community.hj.community.mapper.UserMapper;
 import com.community.hj.community.model.Question;
@@ -94,6 +95,9 @@ public class QuestionService {
     //通过QuestionSevice去调用QuestionMapper
     public QuestionDTO getById(Integer id) {
         Question question = questionMapper.getById(id);
+        if(question == null){
+            throw new CustomizeException("你找的问题不在了，要不换个试试?");
+        }
         QuestionDTO questionDTO = new QuestionDTO();
         BeanUtils.copyProperties(question,questionDTO);//将question赋值到questionDTO
         User user = userMapper.selectByPrimaryKey(question.getCreator());
@@ -112,6 +116,14 @@ public class QuestionService {
             question.setGmtModified(question.getGmtCreate());
             questionMapper.update(question);
         }
+    }
+
+    public void incView(Integer id) {
+        Question question = questionMapper.getById(id);
+        Question updateQuestion = new Question();
+        updateQuestion.setViewCount(question.getViewCount()+1);
+
+        questionMapper.update(updateQuestion);
     }
 }
 
